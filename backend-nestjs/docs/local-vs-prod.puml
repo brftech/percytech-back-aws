@@ -1,0 +1,53 @@
+@startuml local-vs-prod.puml
+skinparam componentStyle rectangle
+skinparam wrapWidth 200
+skinparam maxMessageSize 200
+skinparam rectangle<<svc>> { BackgroundColor #EFF6FF }
+
+cloud "SMS Provider\n(Bandwidth/Twilio)" as SMS
+
+package "Local Dev" {
+  node "Dev Machine" as DEV {
+    rectangle "React Dev Server\n(React 19) :3000" as FE_LOCAL
+    node "Docker" as DOCKER {
+      rectangle "NestJS API\n(Backend) :3001" <<svc>> as BE_LOCAL
+      database "MySQL 8" as DB_LOCAL
+      cloud "Redis" as REDIS_LOCAL
+      rectangle "Webhook Tunnel\n(ngrok / Cloudflare Tunnel)" as TUNNEL
+    }
+
+    FE_LOCAL --> BE_LOCAL : REST/JSON (JWT)
+    BE_LOCAL --> DB_LOCAL : TypeORM
+    BE_LOCAL --> REDIS_LOCAL : Cache
+    BE_LOCAL --> SMS : Send SMS API (HTTPS)
+    SMS ..> TUNNEL : Webhooks (MO/DLR)
+    TUNNEL ..> BE_LOCAL : Forward /webhooks/sms
+  }
+}
+
+package "Production (AWS)" {
+  cloud "CloudFront + S3\n(React build)" as CF
+  node "VPC" as VPC {
+    node "Public Subnets" as PUB {
+      rectangle "ALB\n(HTTPS)" as ALB
+    }
+    node "Private Subnets" as PRIV {
+      rectangle "ECS Fargate\nNestJS API" <<svc>> as BE_PROD
+      database "RDS MySQL\n(Aurora/MySQL)" as DB_PROD
+      cloud "ElastiCache Redis" as REDIS_PROD
+    }
+  }
+
+  CF --> ALB : HTTPS
+  ALB --> BE_PROD : HTTPS
+  BE_PROD --> DB_PROD : TypeORM (SSL)
+  BE_PROD --> REDIS_PROD : Cache
+  BE_PROD --> SMS : Send SMS API (HTTPS)
+  SMS ..> ALB : Webhooks (MO/DLR) → /webhooks/sms
+}
+
+legend left
+  Solid arrows = outbound calls
+  Dotted arrows = inbound webhooks
+end legend
+@enduml

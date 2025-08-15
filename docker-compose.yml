@@ -105,7 +105,7 @@ services:
       ADMINER_DEFAULT_SERVER: db
       ADMINER_DESIGN: dracula
     ports:
-      - "${ADMINER_PORT:-8080}:8080"
+      - "${ADMINER_PORT:-8083}:8080"
     networks:
       - percytech-network
     depends_on:

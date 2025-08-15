@@ -41,6 +41,9 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   passwordHash: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
+  supabaseUserId: string;
+
   @Column({
     type: 'enum',
     enum: LoginMethod,

@@ -1,0 +1,60 @@
+@startuml
+skinparam participantStyle rectangle
+skinparam wrapWidth 200
+skinparam maxMessageSize 200
+title Request Flow: React → NestJS Controller → Service → TypeORM → MySQL
+
+actor User as U
+box "Browser"
+participant "React App\n(fetch/axios)" as FE
+end box
+
+box "Backend (NestJS)"
+participant "MessagesController" as C
+participant "MessagesService" as S
+participant "TypeORM Repository\nMessageRepository" as R
+end box
+
+database "MySQL (RDS/MySQL/Aurora)" as DB
+collections "Redis (optional)" as REDIS
+cloud "SMS Provider\n(Bandwidth/Twilio)" as SMS
+
+== Create / Send Message ==
+U -> FE: Click “Send”
+FE -> C: POST /messages {to, from, body}\nAuthorization: Bearer <JWT>
+C -> S: createMessage(dto, userId)
+S -> R: create(dto)
+R --> S: Message entity
+S -> R: save(entity)
+R --> S: saved {id, ...}
+S -> SMS: Send SMS API (HTTPS)
+SMS --> S: 202 Accepted {providerMessageId}
+S -> R: update(id, {providerMessageId, status:'queued'})
+S --> C: MessageDto
+C --> FE: 201 Created (JSON)
+
+== Provider Webhook (Delivery/Inbounds) ==
+SMS -> C: POST /webhooks/sms {...}
+C -> S: handleWebhook(payload)
+S -> R: find/update message/conversation
+S -> REDIS: invalidate cache (optional)
+S --> C: ok
+C --> SMS: 200
+
+== Fetch Conversation (with Cache) ==
+FE -> C: GET /conversations/{id}
+C -> S: getConversation(id)
+S -> REDIS: GET conv:{id}
+alt cache hit
+REDIS --> S: cached JSON
+S --> C: data
+C --> FE: 200 OK
+else cache miss
+REDIS --> S: (nil)
+S -> R: findOne(id) + relations
+R --> S: entity
+S -> REDIS: SET conv:{id} ttl=60s
+S --> C: data
+C --> FE: 200 OK
+end
+@enduml
