@@ -1,219 +1,202 @@
-# 🚀 **PercyTech Modern Platform**
+# PercyTech Modern - SMS B2B SaaS Platform
 
-A **modern, scalable SMS communication platform** built with cutting-edge technologies that can be branded for different use cases:
+## 🚀 **Project Overview**
 
-- **Gnymble** - Highly-regulated industries (cigar, etc.)
-- **PercyMD** - Healthcare and medical communications
-- **PercyText** - General business texting and communications
+Modernizing a legacy SMS B2B SaaS platform with a **SMS-first architecture**, multi-brand access, and streamlined onboarding. Built with NestJS, React 19, TypeScript, and MySQL.
 
-## ✨ **Core Platform Features**
+## 🎯 **Core Features**
 
-- 🔐 **Secure Authentication** - JWT-based auth with Zustand state management
-- 📱 **Responsive Design** - Mobile-first approach with Tailwind CSS
-- ⚡ **Fast Development** - Vite + React + TypeScript for rapid iteration
-- 🎯 **Type Safety** - Full TypeScript coverage with strict mode
-- 🧪 **Testing Ready** - Vitest + Testing Library setup
-- 📊 **State Management** - Zustand for simple, scalable state
-- 🔄 **Data Fetching** - React Query for server state management
-- 🎨 **Modern UI** - Headless UI components with Heroicons
+### **SMS-First Authentication**
 
-## 🏗️ **Architecture Overview**
+- Phone number as primary login identifier
+- Email as fallback option
+- Multi-company access without email uniqueness constraints
 
-### **Multi-Branding Strategy**
+### **Multi-Brand Architecture**
 
-The platform is designed as a **core SMS communication engine** that can be:
+- **Platform** → **Company** → **Brand** → **Inbox** hierarchy
+- Single company can have multiple TCR-verified brands
+- Each brand gets unique TCR Brand ID for regulatory compliance
 
-- **White-labeled** for different industries
-- **Customized** with industry-specific compliance features
-- **Scaled** from small businesses to enterprise clients
+### **SMS-Driven Onboarding**
 
-### **Compliance Layers**
+- Complete SMS-based purchase and setup flow
+- Stripe integration for payments
+- TCR API for business verification
+- Bandwidth API for phone number assignment
+- Web forms as fallback option
 
-- **Base Layer**: Core SMS functionality, user management, security
-- **Industry Layer**: HIPAA (healthcare), FDA (regulated products), GDPR (privacy)
-- **Brand Layer**: Custom UI, terminology, and business rules
+## 🏗️ **Technical Architecture**
 
-## 🛠 **Tech Stack**
+### **Backend (NestJS + TypeScript)**
 
-### **Frontend**
+- **18 Core Entities**: User, Company, Brand, Inbox, Campaign, gPhone, Message, Conversation, Broadcast, etc.
+- **TypeORM** with MySQL for data persistence
+- **Modular design** with proper separation of concerns
+- **Environment-based configuration** for development/production
 
-- **React 19** - Latest React with concurrent features
-- **TypeScript** - Full type safety and better DX
-- **Vite** - Lightning-fast build tool and dev server
-- **Tailwind CSS** - Utility-first CSS framework
-- **Zustand** - Lightweight state management
-- **React Query** - Server state management
-- **React Router** - Client-side routing
-- **React Hook Form** - Form handling with validation
-- **Zod** - Schema validation
+### **Frontend (React 19 + TypeScript)**
 
-### **Development Tools**
+- **Modern React** with hooks and functional components
+- **Tailwind CSS v4** for styling
+- **Type-safe API client** for backend communication
+- **Responsive design** with mobile-first approach
 
-- **ESLint** - Code linting and quality
-- **Prettier** - Code formatting
-- **Vitest** - Unit testing framework
-- **Testing Library** - React component testing
+### **Database Design**
 
-## 🚀 **Quick Start**
+- **Multi-tenant architecture** with proper relationships
+- **SMS-focused schema** with clear entity boundaries
+- **Regulatory compliance** fields for TCR and Bandwidth integration
+- **AI-ready infrastructure** for future enhancements
+
+## 📊 **Entity Structure**
+
+```
+Platform (PercyTech, Gnymble, PercyMD, PercyText)
+├── Company (Legal business entity)
+│   ├── Brand (TCR-verified DBA names)
+│   │   ├── Campaign (TCR-approved messaging)
+│   │   │   └── gPhone (Assigned phone numbers)
+│   │   └── Inbox (SMS management interface)
+│   └── User (Multi-company access)
+└── Onboarding (SMS-driven setup flow)
+```
+
+## 🔧 **Key Entities**
+
+- **User**: Multi-company access with SMS/email login
+- **Company**: Legal business entity with TCR verification
+- **Brand**: TCR-verified business lines (DBA names)
+- **Inbox**: SMS management interface for each brand
+- **Campaign**: TCR-approved messaging campaigns
+- **gPhone**: Phone number infrastructure
+- **Conversation**: Threaded SMS conversations
+- **Broadcast**: Mass messaging campaigns
+- **OnboardingSession**: SMS-driven setup tracking
+
+## 🚀 **Current Status**
+
+### ✅ **Completed**
+
+- Backend development with all 18 entities
+- Database schema design and implementation
+- Frontend foundation with React 19
+- Docker development environment
+- Basic API endpoints and services
+- Multi-company user architecture
+- SMS-first authentication design
+
+### 🔄 **In Progress**
+
+- Frontend UI components development
+- API endpoint implementation
+- Database migration strategy
+
+### 📋 **Next Steps**
+
+- Authentication system (JWT + Passport)
+- SMS onboarding flow implementation
+- Advanced UI components (Conversation, Broadcast, Persons views)
+- External API integrations (TCR, Bandwidth, Stripe)
+- Row-level security policies
+- AI integration planning
+
+## 🛠️ **Development Setup**
 
 ### **Prerequisites**
 
-- Node.js 20+
-- npm 10+
+- Node.js 18+
+- Docker Desktop
+- MySQL 8.0+
+- Redis
 
-### **Installation**
+### **Quick Start**
 
 ```bash
-# Navigate to the frontend directory
-cd percytech-modern/frontend
+# Start development environment
+docker compose up -d
 
-# Install dependencies
+# Backend (NestJS)
+cd backend-nestjs
 npm install
+npm run start:dev
 
-# Start development server
+# Frontend (React)
+cd frontend
+npm install
 npm run dev
-```
-
-The app will be available at `http://localhost:3000`
-
-## 📁 **Project Structure**
-
-```
-percytech-modern/
-├── frontend/              # React 19 + TypeScript + Vite application
-├── backend/               # Planned backend (not yet implemented)
-├── shared/                # Common utilities and types
-├── docs/                  # Project documentation
-├── docker/                # 🐳 Docker development environment
-├── docker-compose.yml     # Docker services configuration
-├── legacy-system/         # 📁 Copied legacy PercyTech system for reference
-├── README.md              # This file
-└── DEVELOPMENT_GUIDE.md   # Complete development guide
-```
-
-## 🎯 **Development Status**
-
-### **✅ Completed (Week 1)**
-
-- Project setup with Vite + React + TypeScript
-- Tailwind CSS configuration and design system
-- Basic routing with React Router
-- Zustand state management setup
-- Authentication store and protected routes
-- Login/Register forms with validation
-- Basic layout components (Header, Footer, Navigation)
-
-### **🚧 In Progress (Week 2-4)**
-
-- Component library development
-- Form components with validation
-- Data tables and grids
-- Modal and dialog components
-- Testing coverage (80%+)
-- ✅ **Backend development** - NestJS + TypeScript + MySQL setup complete
-
-### **📋 Planned (Weeks 5-8)**
-
-- Core SMS messaging infrastructure
-- Multi-tenant architecture
-- Industry-specific compliance features
-- Advanced communication tools
-
-## 🎨 **Design System**
-
-### **Colors**
-
-- **Primary**: Blue scale (600-700 for main actions)
-- **Gray**: Neutral scale for text and backgrounds
-- **Semantic**: Red for errors, green for success
-
-### **Components**
-
-- **Buttons**: Primary, secondary variants with hover states
-- **Cards**: Consistent shadow and border styling
-- **Forms**: Input fields with focus states and validation
-- **Layout**: Responsive grid system with proper spacing
-
-## 🔐 **Authentication Flow**
-
-1. **Login/Register** - Form validation with Zod schemas
-2. **JWT Storage** - Secure token storage in Zustand
-3. **Protected Routes** - Route-level authentication guards
-4. **Persistent State** - User session persistence across reloads
-
-## 📱 **Responsive Design**
-
-- **Mobile First** - Designed for mobile devices first
-- **Breakpoints** - Tailwind's responsive utilities
-- **Touch Friendly** - Proper touch targets and spacing
-- **Progressive Enhancement** - Enhanced experience on larger screens
-
-## 🧪 **Testing Strategy**
-
-- **Unit Tests** - Component and utility function testing
-- **Integration Tests** - User interaction flows
-- **Accessibility** - Screen reader and keyboard navigation
-- **Performance** - Bundle size and runtime performance
-
-## 🚀 **Deployment**
-
-### **Build Process**
-
-```bash
-npm run build            # Creates optimized dist/ folder
-npm run build:analyze    # Analyze bundle size
 ```
 
 ### **Environment Variables**
 
 ```bash
-VITE_API_URL=           # Backend API endpoint
-VITE_APP_NAME=          # Application name
-VITE_APP_VERSION=       # App version
-VITE_BRAND_TYPE=        # gnymble|percymd|percytext
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=percytech
+DB_PASS=password
+DB_NAME=percytech_modern
+
+# Backend
+NODE_ENV=development
+PORT=3001
 ```
 
-## 🔧 **Configuration Files**
+## 🎨 **UI/UX Improvements**
 
-- **vite.config.ts** - Vite build configuration
-- **tailwind.config.js** - Tailwind CSS customization
-- **tsconfig.json** - TypeScript compiler options
-- **.eslintrc.cjs** - ESLint rules and plugins
-- **.prettierrc** - Code formatting rules
+### **Legacy System Enhancements**
 
-## 📚 **Learning Resources**
+- **Conversation View**: Replace confusing Person-Inbox dashboard
+- **Broadcast View**: Enhanced mass messaging interface
+- **Persons View**: Better contact management
+- **Superadmin Dashboard**: Overhaul existing management interface
 
-- [React Documentation](https://react.dev/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Vite Guide](https://vitejs.dev/guide/)
-- [Zustand](https://github.com/pmndrs/zustand)
-- [React Query](https://tanstack.com/query/latest)
+### **Modern Design Principles**
 
-## 🎯 **For Developers & Agents**
+- Mobile-first responsive design
+- SMS-centric user experience
+- Progressive enhancement for SMS-enabled users
+- Clean, intuitive navigation
 
-- **`DEVELOPMENT_GUIDE.md`** - Complete guide for working with this project
-- **`legacy-system/`** - Copied legacy system for reference
+## 🔒 **Security & Compliance**
+
+- **Multi-tenant data isolation** with row-level security
+- **TCR compliance** for business verification
+- **Bandwidth integration** for regulatory phone number management
+- **Secure authentication** with JWT tokens
+- **Role-based access control** per company/brand
+
+## 🚀 **Future Enhancements**
+
+### **AI Integration**
+
+- Replace static "WorkHours" with dynamic AI scheduling
+- Smart auto-responses using "Keywords" data
+- AI-powered conversation management
+- Predictive analytics for SMS campaigns
+
+### **Advanced Features**
+
+- Real-time SMS webhooks
+- Advanced filtering and search
+- Bulk operations and automation
+- Integration with external CRMs
+
+## 📚 **Documentation & Resources**
+
+- **API Documentation**: Built-in Swagger/OpenAPI
+- **Database Schema**: Comprehensive entity documentation
+- **Development Guide**: Setup and contribution guidelines
+- **Legacy System Analysis**: Cross-reference with existing features
 
 ## 🤝 **Contributing**
 
-1. **Fork** the repository
-2. **Create** a feature branch
-3. **Make** your changes
-4. **Test** thoroughly
-5. **Submit** a pull request
-
-## 📄 **License**
-
-This project is licensed under the MIT License.
+1. Fork the repository
+2. Create feature branch
+3. Follow TypeScript and NestJS best practices
+4. Test thoroughly with existing entities
+5. Submit pull request with clear description
 
 ---
 
-## 🔗 **Related Projects**
-
-This is the **modern platform** being developed alongside the **legacy PercyTech system**.
-
-- **Legacy System**: `/legacy-system` - Copied 5-year-old healthcare communication platform
-- **Modern Platform**: `/percytech-modern` - New React 19 + TypeScript application (this project)
-
-**Built with ❤️ by the PercyTech Team**
+**Built with ❤️ for modern SMS business communication**
