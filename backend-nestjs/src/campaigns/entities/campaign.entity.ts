@@ -6,7 +6,9 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
+import { Brand } from '../../brands/entities/brand.entity';
 import { Inbox } from '../../inboxes/entities/inbox.entity';
 
 export enum CampaignStatus {
@@ -43,7 +45,7 @@ export class Campaign {
   id: number;
 
   @Column({ type: 'bigint' })
-  inboxId: number;
+  brandId: number;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -119,9 +121,12 @@ export class Campaign {
   updatedAt: Date;
 
   // Relationships
-  @ManyToOne(() => Inbox, (inbox) => inbox.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'inboxId' })
-  inbox: Inbox;
+  @ManyToOne(() => Brand, (brand) => brand.campaigns, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'brandId' })
+  brand: Brand;
+
+  @OneToMany(() => Inbox, (inbox) => inbox.campaign, { cascade: true })
+  inboxes: Inbox[];
 
   // Helper methods
   get isActive(): boolean {

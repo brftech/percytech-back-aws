@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Company } from '../../companies/entities/company.entity';
+import { Campaign } from '../../campaigns/entities/campaign.entity';
 
 export enum BrandStatus {
   ACTIVE = 'active',
@@ -107,6 +109,9 @@ export class Brand {
   @ManyToOne(() => Company, (company) => company.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'companyId' })
   company: Company;
+
+  @OneToMany(() => Campaign, (campaign) => campaign.brand, { cascade: true })
+  campaigns: Campaign[];
 
   // Helper methods
   get isActive(): boolean {

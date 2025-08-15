@@ -206,7 +206,7 @@ export class Person {
   }
 
   get brandName(): string {
-    return this.inbox?.brand?.name || 'No Brand';
+    return this.inbox?.campaign?.brand?.name || 'No Brand';
   }
 
   get platformType(): string {

@@ -87,7 +87,7 @@ export interface Brand {
 export interface Inbox {
   id: number;
   companyId: number;
-  brandId?: number;
+  campaignId: number;
   name: string;
   timeZone?: string;
   areaCode?: string;
@@ -171,29 +171,14 @@ export interface Person {
 // Campaign types
 export interface Campaign {
   id: number;
-  inboxId: number;
+  brandId: number;
   name: string;
   description?: string;
-  useCase:
-    | 'marketing'
-    | 'transactional'
-    | 'two_factor'
-    | 'account_notification'
-    | 'customer_service'
-    | 'delivery_notification'
-    | 'appointment_reminder'
-    | 'other';
+  useCase: 'marketing' | 'transactional' | 'two_factor' | 'account_notification' | 'customer_service' | 'delivery_notification' | 'appointment_reminder' | 'other';
   messageContent?: string;
-  status:
-    | 'draft'
-    | 'pending_approval'
-    | 'approved'
-    | 'rejected'
-    | 'active'
-    | 'paused'
-    | 'expired';
-  tcrStatus: 'pending' | 'approved' | 'rejected' | 'under_review';
-  bandwidthStatus: 'pending' | 'approved' | 'rejected' | 'under_review';
+  status: 'draft' | 'pending_approval' | 'approved' | 'rejected' | 'active' | 'paused' | 'expired';
+  tcrStatus: 'pending' | 'in_progress' | 'approved' | 'rejected' | 'under_review';
+  bandwidthStatus: 'pending' | 'in_progress' | 'approved' | 'rejected' | 'under_review';
   tcrBrandId?: string;
   tcrCampaignId?: string;
   tcrResponse?: Record<string, string | number | boolean>;
@@ -212,7 +197,6 @@ export interface Campaign {
 export interface GPhone {
   id: number;
   inboxId: number;
-  campaignId?: number;
   phoneNumber: string;
   type: 'local' | 'toll_free' | 'short_code' | 'international';
   status: 'available' | 'assigned' | 'in_use' | 'suspended' | 'expired';
@@ -223,8 +207,8 @@ export interface GPhone {
   state?: string;
   country?: string;
   bandwidthData?: Record<string, string | number | boolean>;
-  assignedAt?: string;
-  lastUsedAt?: string;
+  assignedAt?: string | null;
+  lastUsedAt?: string | null;
   settings?: Record<string, string | number | boolean>;
   createdAt: string;
   updatedAt: string;

@@ -178,21 +178,19 @@ export class ApiClient {
     });
   }
 
-  // Campaign endpoints
-  async getCampaigns(): Promise<Campaign[]> {
-    return this.request<Campaign[]>('/campaigns');
-  }
+  // Campaigns
+  async getCampaigns(): Promise<Campaign[]> { return this.request<Campaign[]>('/campaigns'); }
+  async getCampaign(id: number): Promise<Campaign> { return this.request<Campaign>(`/campaigns/${id}`); }
+  async createCampaign(campaign: Partial<Campaign>): Promise<Campaign> { return this.request<Campaign>('/campaigns', { method: 'POST', body: campaign }); }
+  async updateCampaign(id: number, campaign: Partial<Campaign>): Promise<Campaign> { return this.request<Campaign>(`/campaigns/${id}`, { method: 'PUT', body: campaign }); }
+  async deleteCampaign(id: number): Promise<void> { return this.request<void>(`/campaigns/${id}`, { method: 'DELETE' }); }
 
-  async getCampaignById(id: number): Promise<Campaign> {
-    return this.request<Campaign>(`/campaigns/${id}`);
-  }
-
-  async createCampaign(campaign: Partial<Campaign>): Promise<Campaign> {
-    return this.request<Campaign>('/campaigns', {
-      method: 'POST',
-      body: JSON.stringify(campaign),
-    });
-  }
+  // Inboxes
+  async getInboxes(): Promise<Inbox[]> { return this.request<Inbox[]>('/inboxes'); }
+  async getInbox(id: number): Promise<Inbox> { return this.request<Inbox>(`/inboxes/${id}`); }
+  async createInbox(inbox: Partial<Inbox>): Promise<Inbox> { return this.request<Inbox>('/inboxes', { method: 'POST', body: inbox }); }
+  async updateInbox(id: number, inbox: Partial<Inbox>): Promise<Inbox> { return this.request<Inbox>(`/inboxes/${id}`, { method: 'PUT', body: inbox }); }
+  async deleteInbox(id: number): Promise<void> { return this.request<void>(`/inboxes/${id}`, { method: 'DELETE' }); }
 
   // gPhone endpoints
   async getGPhones(): Promise<GPhone[]> {

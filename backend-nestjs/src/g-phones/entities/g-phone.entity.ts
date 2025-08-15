@@ -8,7 +8,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Inbox } from '../../inboxes/entities/inbox.entity';
-import { Campaign } from '../../campaigns/entities/campaign.entity';
 
 export enum gPhoneStatus {
   AVAILABLE = 'available',
@@ -32,9 +31,6 @@ export class gPhone {
 
   @Column({ type: 'bigint' })
   inboxId: number;
-
-  @Column({ type: 'bigint', nullable: true })
-  campaignId: number;
 
   @Column({ type: 'varchar', length: 20, unique: true })
   phoneNumber: string;
@@ -75,10 +71,10 @@ export class gPhone {
   bandwidthData: Record<string, any>;
 
   @Column({ type: 'timestamp', nullable: true })
-  assignedAt: Date;
+  assignedAt: Date | null;
 
   @Column({ type: 'timestamp', nullable: true })
-  lastUsedAt: Date;
+  lastUsedAt: Date | null;
 
   @Column({ type: 'json', nullable: true })
   settings: Record<string, any>;
@@ -90,15 +86,9 @@ export class gPhone {
   updatedAt: Date;
 
   // Relationships
-  @ManyToOne(() => Inbox, (inbox) => inbox.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Inbox, (inbox) => inbox.gPhones, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'inboxId' })
   inbox: Inbox;
-
-  @ManyToOne(() => Campaign, (campaign) => campaign.id, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn({ name: 'campaignId' })
-  campaign: Campaign;
 
   // Helper methods
   get isAvailable(): boolean {
@@ -109,19 +99,16 @@ export class gPhone {
     return this.status === gPhoneStatus.IN_USE;
   }
 
-  get isAssignedToCampaign(): boolean {
-    return this.campaignId !== null && this.campaignId !== undefined;
+  get isAssignedToInbox(): boolean {
+    return this.inboxId !== null && this.inboxId !== undefined;
   }
 
   get canReceiveMessages(): boolean {
-    return (
-      this.status === gPhoneStatus.IN_USE ||
-      this.status === gPhoneStatus.ASSIGNED
-    );
+    return this.isAssignedToInbox && this.status === gPhoneStatus.IN_USE;
   }
 
   get canSendMessages(): boolean {
-    return this.isAssignedToCampaign && this.campaign?.canSendMessages;
+    return this.isAssignedToInbox && this.status === gPhoneStatus.IN_USE;
   }
 
   get isLocal(): boolean {
@@ -187,18 +174,18 @@ export class gPhone {
   }
 
   // Management methods
-  assignToCampaign(campaignId: number): void {
-    this.campaignId = campaignId;
+  assignToInbox(inboxId: number): void {
+    this.inboxId = inboxId;
     this.isAssigned = true;
     this.status = gPhoneStatus.ASSIGNED;
     this.assignedAt = new Date();
   }
 
-  unassignFromCampaign(): void {
-    this.campaignId = null as any;
+  unassignFromInbox(): void {
+    this.inboxId = 0;
     this.isAssigned = false;
     this.status = gPhoneStatus.AVAILABLE;
-    this.assignedAt = null as any;
+    this.assignedAt = null;
   }
 
   markAsInUse(): void {

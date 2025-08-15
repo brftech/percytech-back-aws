@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Company } from '../../companies/entities/company.entity';
-import { Brand } from '../../brands/entities/brand.entity';
+import { Campaign } from '../../campaigns/entities/campaign.entity';
+import { gPhone } from '../../g-phones/entities/g-phone.entity';
 
 export enum InboxStatus {
   SETUP = 'setup',
@@ -27,8 +29,8 @@ export class Inbox {
   @Column({ type: 'bigint' })
   companyId: number;
 
-  @Column({ type: 'bigint', nullable: true })
-  brandId: number;
+  @Column({ type: 'bigint' })
+  campaignId: number;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -99,9 +101,14 @@ export class Inbox {
   @JoinColumn({ name: 'companyId' })
   company: Company;
 
-  @ManyToOne(() => Brand, (brand) => brand.id, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'brandId' })
-  brand: Brand;
+  @ManyToOne(() => Campaign, (campaign) => campaign.inboxes, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'campaignId' })
+  campaign: Campaign;
+
+  @OneToMany(() => gPhone, (gPhone) => gPhone.inbox, { cascade: true })
+  gPhones: gPhone[];
 
   // Helper methods
   get isSetup(): boolean {
@@ -121,7 +128,7 @@ export class Inbox {
   }
 
   get canText(): boolean {
-    return this.isOperational && this.brandId !== null;
+    return this.isOperational && this.campaignId !== null;
   }
 
   get isInOnboarding(): boolean {
