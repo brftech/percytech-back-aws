@@ -1,0 +1,121 @@
+# PercyTech Backend AWS - Core Texting Platform
+
+## Overview
+
+Core texting platform built with NestJS, MySQL, and AWS infrastructure. Handles messaging, conversations, phone management, and core texting services.
+
+## Architecture
+
+- **Framework**: NestJS
+- **Database**: MySQL (via TypeORM)
+- **Infrastructure**: AWS
+- **Authentication**: JWT-based authentication
+- **Services**: Messages, conversations, inboxes, g-phones, broadcasts
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose
+- MySQL 8.0
+
+### 🚀 **Easy Setup (Recommended)**
+
+From the root directory, you can use the convenient runner script:
+
+```bash
+# First time setup (installs dependencies, starts docker, sets up environment)
+./run.sh setup
+
+# Start development environment
+./run.sh dev
+
+# Or use npm scripts from root
+npm run setup
+npm run dev
+```
+
+### Alternative: Manual Setup
+
+```bash
+# Install dependencies
+cd backend-nestjs
+npm install
+
+# Setup environment
+cp env.development .env
+
+# Start database and services
+docker-compose up -d db redis
+
+# Start development server
+npm run start:dev
+```
+
+## Available Commands
+
+### From Root Directory
+
+```bash
+# Setup and Development
+./run.sh setup     # Complete first-time setup
+./run.sh dev       # Start development environment
+./run.sh install   # Install backend dependencies
+
+# Docker Management
+./run.sh docker:up   # Start Docker services
+./run.sh docker:down # Stop Docker services
+./run.sh docker:logs # View Docker logs
+
+# Backend Operations
+./run.sh start:dev # Start development server
+./run.sh build     # Build the application
+./run.sh test      # Run tests
+./run.sh lint      # Run linting
+
+# Help
+./run.sh help      # Show all available commands
+```
+
+### Using NPM Scripts (from root)
+
+```bash
+npm run setup      # Complete setup
+npm run dev        # Start development
+npm run start:dev  # Start backend only
+npm run build      # Build backend
+npm run test       # Run tests
+npm run docker:up  # Start Docker services
+```
+
+## API Endpoints
+
+- `/api/v1/messages` - Message management
+- `/api/v1/conversations` - Conversation handling
+- `/api/v1/inboxes` - Inbox management
+- `/api/v1/g-phones` - Phone number management
+- `/api/v1/broadcasts` - Broadcast messaging
+
+## AWS Integration
+
+This service is designed for AWS deployment with:
+
+- **ECS/Fargate** for containerized deployment
+- **RDS MySQL** for database
+- **ElastiCache Redis** for caching
+- **S3** for file storage
+- **CloudWatch** for monitoring and logging
+
+## Development
+
+- **Port**: 3000 (configurable)
+- **Database**: MySQL on port 3306
+- **Redis**: Port 6379
+- **Adminer**: Port 8083 (database admin)
+
+## Deployment
+
+- **Production**: AWS ECS/Fargate
+- **Database**: AWS RDS MySQL
+- **Cache**: AWS ElastiCache Redis

@@ -77,12 +77,6 @@ jspm_packages/
 .cache
 .parcel-cache
 
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-
 # Storybook build outputs
 .out
 .storybook-out
@@ -104,18 +98,17 @@ legacy-system/
 # MODERN PLATFORM INCLUDES
 # ===========================================
 # Include modern platform files
-!frontend/
-!backend/
-!shared/
 !docs/
 !package.json
 !package-lock.json
 !tsconfig.json
+!tsconfig.build.json
 !.eslintrc.*
 !.prettierrc*
-!vite.config.*
-!tailwind.config.*
+!nest-cli.json
 !docker-compose.yml
 !docker/
 !env.development.example
-!scripts/
+!run.sh
+!start-and-test.sh
+!test-api.js
