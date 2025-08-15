@@ -33,8 +33,8 @@ export function LoginPage() {
     try {
       await login(data.email, data.password);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
+    } catch {
+      setError('Invalid credentials');
     } finally {
       setIsLoading(false);
     }

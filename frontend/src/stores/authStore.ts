@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthStore>()(
       isLoading: false,
 
       // Actions
-      login: async (email: string, _password: string) => {
+      login: async (email: string) => {
         set({ isLoading: true });
         try {
           // TODO: Implement actual API call
