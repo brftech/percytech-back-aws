@@ -1,0 +1,160 @@
+networks:
+  percytech-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  app_logs:
+    driver: local
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: percytech-mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-percytech_dev}
+      MYSQL_USER: ${DB_USER:-percytech}
+      MYSQL_PASSWORD: ${DB_PASS:-password}
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+      # Development logging
+      MYSQL_GENERAL_LOG: 1
+      MYSQL_GENERAL_LOG_FILE: /var/lib/mysql/general.log
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    networks:
+      - percytech-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${DB_ROOT_PASSWORD:-root_password}",
+        ]
+      timeout: 20s
+      retries: 10
+
+  # Redis Cache
+  redis:
+    image: redis:7.0-alpine
+    container_name: percytech-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./docker/logs/redis:/var/log/redis
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    networks:
+      - percytech-network
+    healthcheck:
+      test:
+        ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      timeout: 20s
+      retries: 10
+
+  # MinIO (S3-compatible storage for local development)
+  minio:
+    image: minio/minio:latest
+    container_name: percytech-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_BROWSER: "on"
+    volumes:
+      - minio_data:/data
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    networks:
+      - percytech-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      timeout: 20s
+      retries: 10
+
+  # Database Administration Tool
+  adminer:
+    image: adminer:4.8.1
+    container_name: percytech-adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: dracula
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    networks:
+      - percytech-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Redis Commander (Redis Administration Tool) - Commented out due to image issues
+  # redis-commander:
+  #   image: rediscommander/redis-commander:latest
+  #   container_name: percytech-redis-commander
+  #   restart: unless-stopped
+  #   environment:
+  #     REDIS_HOSTS: "local:redis:6379:0:${REDIS_PASSWORD:-redis_password}"
+  #     HTTP_USER: ${REDIS_COMMANDER_USER:-admin}
+  #     HTTP_PASSWORD: ${REDIS_COMMANDER_PASSWORD:-admin}
+  #   ports:
+  #     - "${REDIS_COMMANDER_PORT:-8081}:8081"
+  #   networks:
+  #     - percytech-network
+  #   depends_on:
+  #     redis:
+  #       condition: service_healthy
+
+  # Local mail catcher for development
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: percytech-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    networks:
+      - percytech-network
+
+  # phpMyAdmin as an alternative to Adminer
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: percytech-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USER:-percytech}
+      PMA_PASSWORD: ${DB_PASS:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    ports:
+      - "8082:80"
+    networks:
+      - percytech-network
+    depends_on:
+      db:
+        condition: service_healthy
