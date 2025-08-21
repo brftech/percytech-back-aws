@@ -9,7 +9,7 @@ config({ path: path.join(__dirname, '../env.development') });
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const port = process.env.PORT || 3002;
+  const port = process.env.PORT || 5174;
   await app.listen(port);
 
   console.log(`🚀 Application is running on: http://localhost:${port}`);
