@@ -22,7 +22,9 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "setup": "npm install && npm run docker:up",
-    "dev": "npm run docker:up && npm run start:dev"
+    "dev": "npm run docker:up && npm run start:dev",
+    "dev:3002": "npm run docker:up && npm run start:dev",
+    "start:3002": "PORT=3002 npm run start:dev"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

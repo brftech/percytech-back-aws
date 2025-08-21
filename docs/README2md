@@ -109,7 +109,7 @@ This service is designed for AWS deployment with:
 
 ## Development
 
-- **Port**: 3000 (configurable)
+- **Port**: 3002 (configurable)
 - **Database**: MySQL on port 3306
 - **Redis**: Port 6379
 - **Adminer**: Port 8083 (database admin)

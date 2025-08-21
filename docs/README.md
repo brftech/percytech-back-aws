@@ -135,7 +135,7 @@ DB_NAME=percytech_modern
 
 # Backend
 NODE_ENV=development
-PORT=3001
+PORT=3002
 JWT_SECRET=your-jwt-secret-key
 ```
 
